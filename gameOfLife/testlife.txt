@@ -1,0 +1,86 @@
+This file contains various tests which can also be easily verified visually
+
+>>> import life as l
+>>> board = {(2,2),(3,2),(4,2)}
+
+# the test for the proper printing by print_board({(y1,x1)}, size)
+
+>>> l.print_board( board , 5)
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  .  x  .  . 
+ .  .  x  .  . 
+ .  .  x  .  . 
+
+# the test for proper advance to the next generation of the game
+
+>>> l.print_board(l.constrain(l.advance(board), 5), 5)
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  x  x  x  . 
+ .  .  .  .  . 
+
+# Testing all rules explicitly
+# 1. Tests that any live cell with fewer than two live neighbours dies, as if caused by underpopulation
+
+>>> board = {(3,3), (2,3)}
+>>> l.print_board( board , 5)
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  .  .  x  . 
+ .  .  .  x  . 
+ .  .  .  .  . 
+>>> l.print_board(l.constrain(l.advance(board), 5), 5)
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  .  .  .  . 
+ .  .  .  .  . 
+
+
+# 2.a. Tests that any live cell with two or three live neighbours lives on to the next generation.
+# 2.b. Tests that any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
+>>> board = {(4,3), (2,1), (3,2), (4,6), (2,6), (3,7), (4,8)}
+>>> l.print_board( board , 10)
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  x  .  .  .  .  x  .  .  . 
+ .  .  x  .  .  .  .  x  .  . 
+ .  .  .  x  .  .  x  .  x  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+>>> l.print_board(l.constrain(l.advance(board), 10), 10)
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  x  .  .  .  x  x  .  . 
+ .  .  .  .  .  .  .  x  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+ .  .  .  .  .  .  .  .  .  . 
+
+# 4. Tests that any live cell with more than three live neighbours dies, as if by overpopulation.
+
+>>> board = {(1,0), (1,4), (2,1),(2,3),(3,2),(4,1),(4,3),(5,0),(5,4)}
+>>> l.print_board( board , 6)
+ .  .  .  .  .  . 
+ x  .  .  .  x  . 
+ .  x  .  x  .  . 
+ .  .  x  .  .  . 
+ .  x  .  x  .  . 
+ x  .  .  .  x  . 
+>>> l.print_board(l.constrain(l.advance(board), 6), 6)
+ .  .  .  .  .  . 
+ .  .  .  .  .  . 
+ .  x  x  x  .  . 
+ .  x  .  x  .  . 
+ .  x  x  x  .  . 
+ .  .  .  .  .  . 
+
