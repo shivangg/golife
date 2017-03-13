@@ -1,2 +1,2 @@
 # golife
-Implementation of Conway's Game of Life
+Python exercise to implement user-configurable Conway's Game of Life
