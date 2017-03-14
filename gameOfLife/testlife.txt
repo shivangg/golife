@@ -1,4 +1,6 @@
 This file contains various tests which can also be easily verified visually
+To run tests:
+python3 -m doctest -v testlife.txt
 
 >>> import life as l
 >>> board = {(2,2),(3,2),(4,2)}

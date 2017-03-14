@@ -1,13 +1,3 @@
-"""Python implementation of Conway's Game of Life
-
-Somewhat inspired by Jack Diederich's talk `Stop Writing Classes`
-http://pyvideo.org/video/880/stop-writing-classes
-
-Ironically, as I extended the functionality of this module it seems obvious
-that the next step would be to refactor board into a class with advance and
-constrain as methods and print_board as __str__.
-"""
-
 import sys
 import time
 import json
@@ -20,79 +10,79 @@ from collections import OrderedDict
 # 4. y: [x1,xy2, ...]
 # for example see data.json
 
-def getJSON(pathname):
- 
-     # open the config from the provided JSON file
-    with open(pathname, 'r') as data_file:    
-        seed = json.load(data_file)
 
-    seed = OrderedDict(sorted(seed.items()))
-    # print(seed['0'])
-    print(seed['steps'], seed['size'], seed['time_interval'])
-
-    steps = size = time = 0
-
-    print("TO use Default settin,press(Y/n)")
-    choiceSetting = input()
-    if choiceSetting is 'Y' or choiceSetting is 'yes' or choiceSetting is 'Yes' or choiceSetting is '':
-        steps, size, time = int(seed['steps']), int(seed['size']), float(seed['time_interval'])
-    elif choiceSetting is 'n' or choiceSetting is 'N' or choiceSetting is 'no' or choiceSetting is 'No':
-        print("THe current settings will be  set as default.")
-        print("Enter the number steps you want (integer)")
-        steps = int(input())
-        print("Enter the size of square world you want (integer)")
-        size = int(input())
-        print("Enter the time interval you want between 2 steps (integer)")
-        time = float(input())
-    else:
-        print("Invalid choice")
-        return
-
-    # set the current supplied data as new Default
-    seed["steps"] = steps
-    seed["size"] = size
-    seed["time_interval"] = time
-
-    with open(pathname, "w") as jsonFile:
-        json.dump(seed, jsonFile,  indent=4, separators=(', ', ': '))
-
+def get_json(pathname):
+    # to store the mentioned values
+    yes = ['y', 'yes', 'Yes', 'YES', '']
+    no = ['n', 'not', 'No', 'NO']
 
     # to store settings and points data
     data = []
 
+    # open the config from the provided JSON file
+    with open(pathname, 'r') as data_file:
+        seed = json.load(data_file)
+
+    # to make the entries in seed stay ordered
+    seed = OrderedDict(sorted(seed.items()))
+
+    print("Use the default settings? (Y/n)")
+    choice_setting = input()
+
+    if choice_setting in yes:
+        steps, size, time_interval = int(seed['steps']), int(seed['size']), float(seed['time_interval'])
+
+    elif choice_setting in no:
+        print("The current settings will be  set as default.\nEnter the number steps you want (integer) ")
+        steps = int(input())
+        print("Enter the size of square world you want (integer)")
+        size = int(input())
+        print("Enter the time interval you want between 2 steps (integer)")
+        time_interval = float(input())
+
+    else:
+        print("Invalid choice")
+        return
+
+    # set the current supplied data as new default
+    seed["steps"] = steps
+    seed["size"] = size
+    seed["time_interval"] = time_interval
+
+    # write the new default into the JSON file
+    with open(pathname, "w") as jsonFile:
+        json.dump(seed, jsonFile, indent=4, separators=(', ', ': '))
+
     # for choices in seed:
     print("Enter choice for the world between 1 and ", len(seed.items()) - 3)
     choices = int(input()) - 1
-    # print(seed[str(choices)])
-        # print(seed[choices])
-    # set to store the xy coordinates
-    world_JSON_points = set()
+
+    # set to store the yx coordinates
+    world_json_points = set()
     for y in seed[str(choices)]:
-        # print(seed[choices][y])
         for x in seed[str(choices)][y]:
             point = (int(y), int(x))
-            world_JSON_points.add(point)
+            world_json_points.add(point)
 
-    data.append(world_JSON_points)
+    data.append(world_json_points)
     data.append(steps)
     data.append(size)
-    data.append(time)
+    data.append(time_interval)
 
-    return(data)
-
+    return data
 
 
 def neighbors(cell, distance=1):
-    """Return the neighbors of cell."""
+    # Return the neighbors at specified distance
     x, y = cell
     r = range(0 - distance, 1 + distance)
-    return ((x + i, y + j) # new cell offset from center
-        for i in r for j in r # iterate over range in 2d
-        if not i == j == 0  ) # exclude the center cell
+    return ((x + i, y + j)  # new cell difference from center
+            for i in r for j in r  # iterate over range in 2d
+            if not i == j == 0)  # exclude the center cell
 
 
 def advance(board):
-    """Advance the board one step and return it."""
+    # Advance the board one generation and return it.
     new_board = set()
     for cell in board:
         cell_neighbors = set(neighbors(cell))
@@ -107,12 +97,12 @@ def advance(board):
 
 
 def print_board(board, size=None):
-    sizex = sizey = size or 0
+    size_x = size_y = size or 0
     for x, y in board:
-        sizex = x if x > sizex else sizex
-        sizey = y if y > sizey else sizey
-    for i in range(0, sizex ):
-        for j in range(0, sizey):
+        size_x = x if x > size_x else size_x
+        size_y = y if y > size_y else size_y
+    for i in range(0, size_x):
+        for j in range(0, size_y):
             sys.stdout.write(' x ' if (i, j) in board else ' . ')
         print()
 
@@ -121,12 +111,12 @@ def constrain(board, size):
     return set(cell for cell in board if cell[0] <= size and cell[1] <= size)
 
 
-def main(pathname="data.json", steps=175, size=25):
-    settings_data = getJSON(pathname)
+def main(pathname="data.json"):
+    settings_data = get_json(pathname)
     board = settings_data[0]
     steps = settings_data[1]
     size = settings_data[2]
-    timep = settings_data[3]
+    time_interval = settings_data[3]
     # print(board)
     for i in range(1, steps + 1):
         # move to the top of the screen
@@ -134,9 +124,9 @@ def main(pathname="data.json", steps=175, size=25):
         # clear the screen
         sys.stdout.write('\033[J')
         # step number
-        print('step:'+ str(i)+ '/' + str(steps))
+        print('step:' + str(i) + '/' + str(steps))
         print_board(board, size)
-        time.sleep(timep)
+        time.sleep(time_interval)
         board = constrain(advance(board), size)
 
 
